@@ -27,15 +27,15 @@ a {
 }
 
 .site[data-theme="light"] {
-  --bg: #fff4f4;
-  --card: #ffffff;
-  --text: #241111;
-  --muted: #7d4040;
-  --primary: #d71920;
-  --primary-soft: #ffe3e3;
-  --border: rgba(215, 25, 32, 0.22);
-  --shadow: 0 16px 40px rgba(160, 20, 20, 0.12);
-  background: linear-gradient(180deg, #ffffff 0%, var(--bg) 100%);
+  --bg: #fff8f8;
+  --card: #fffdfd;
+  --text: #2d171a;
+  --muted: #bf6571;
+  --primary: #e2929d;
+  --primary-soft: #f9dde1;
+  --border: rgba(226, 146, 157, 0.36);
+  --shadow: 0 16px 40px rgba(226, 146, 157, 0.18);
+  background: linear-gradient(180deg, #ffffff 0%, #fff7f8 46%, #fbe3e7 100%);
   color: var(--text);
 }
 
