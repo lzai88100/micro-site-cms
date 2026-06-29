@@ -83,9 +83,10 @@ a {
 .cover {
   height: 160px;
   border-radius: 24px 24px 10px 10px;
-  background:
-    linear-gradient(135deg, rgba(255,255,255,0.18), rgba(255,255,255,0)),
-    linear-gradient(135deg, var(--primary), #111);
+  background-size: contain !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+  background-color: #111;
   display: flex;
   align-items: center;
   justify-content: center;
