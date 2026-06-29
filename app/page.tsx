@@ -10,15 +10,27 @@ type SiteSettings = {
   site_name: string;
   tags: string[];
   intro_content: string;
+
   background_image_url: string | null;
   cover_image_url: string | null;
   avatar_image_url: string | null;
+
+  light_background_image_url: string | null;
+  light_cover_image_url: string | null;
+  light_avatar_image_url: string | null;
+
+  dark_background_image_url: string | null;
+  dark_cover_image_url: string | null;
+  dark_avatar_image_url: string | null;
+
   line_label: string;
   line_url: string;
   line_is_visible: boolean;
+
   telegram_label: string;
   telegram_url: string;
   telegram_is_visible: boolean;
+
   default_theme: ThemeMode;
   allow_theme_switch: boolean;
 };
@@ -39,15 +51,27 @@ const fallbackSettings: SiteSettings = {
   tags: ["全台", "嚴選", "情報中心"],
   intro_content:
     "📌 客服時間：11:00 - 04:30\n📌 營業時間：12:00 - 04:30\n🌏 服務地區：台北 / 新北 / 桃園 / 新竹 / 台中 / 台南 / 高雄\n📮 預約方式：請先看完問與答，再告訴我們想要約的時間、哪些地區、什麼方案。",
+
   background_image_url: null,
   cover_image_url: null,
   avatar_image_url: null,
+
+  light_background_image_url: null,
+  light_cover_image_url: null,
+  light_avatar_image_url: null,
+
+  dark_background_image_url: null,
+  dark_cover_image_url: null,
+  dark_avatar_image_url: null,
+
   line_label: "LINE 一鍵聯絡",
   line_url: "#",
   line_is_visible: true,
+
   telegram_label: "Telegram 聯絡",
   telegram_url: "#",
   telegram_is_visible: true,
+
   default_theme: "system",
   allow_theme_switch: true,
 };
@@ -92,7 +116,11 @@ export default function Home() {
       }
 
       if (siteData) {
-        setSettings(siteData);
+        setSettings({
+          ...fallbackSettings,
+          ...siteData,
+        });
+
         const savedTheme = localStorage.getItem("theme-mode") as ThemeMode | null;
         setThemeMode(savedTheme || siteData.default_theme || "system");
       }
@@ -177,21 +205,48 @@ export default function Home() {
   const largeButtons = buttons.filter((button) => button.button_type === "large");
   const gridButtons = buttons.filter((button) => button.button_type === "grid");
 
+  const currentBackgroundImage =
+    resolvedTheme === "dark"
+      ? settings.dark_background_image_url ||
+        settings.background_image_url ||
+        settings.light_background_image_url
+      : settings.light_background_image_url ||
+        settings.background_image_url ||
+        settings.dark_background_image_url;
+
+  const currentCoverImage =
+    resolvedTheme === "dark"
+      ? settings.dark_cover_image_url ||
+        settings.cover_image_url ||
+        settings.light_cover_image_url
+      : settings.light_cover_image_url ||
+        settings.cover_image_url ||
+        settings.dark_cover_image_url;
+
+  const currentAvatarImage =
+    resolvedTheme === "dark"
+      ? settings.dark_avatar_image_url ||
+        settings.avatar_image_url ||
+        settings.light_avatar_image_url
+      : settings.light_avatar_image_url ||
+        settings.avatar_image_url ||
+        settings.dark_avatar_image_url;
+
   return (
-  <main
-    className={settings.background_image_url ? "site has-background" : "site"}
-    data-theme={resolvedTheme}
-    style={
-      settings.background_image_url
-        ? {
-            backgroundImage:
-              resolvedTheme === "dark"
-                ? `linear-gradient(rgba(0, 0, 0, 0.62), rgba(0, 0, 0, 0.78)), url(${settings.background_image_url})`
-                : `linear-gradient(rgba(255, 244, 244, 0.72), rgba(255, 244, 244, 0.88)), url(${settings.background_image_url})`,
-          }
-        : undefined
-    }
-  >
+    <main
+      className={currentBackgroundImage ? "site has-background" : "site"}
+      data-theme={resolvedTheme}
+      style={
+        currentBackgroundImage
+          ? {
+              backgroundImage:
+                resolvedTheme === "dark"
+                  ? `linear-gradient(rgba(0, 0, 0, 0.62), rgba(0, 0, 0, 0.78)), url(${currentBackgroundImage})`
+                  : `linear-gradient(rgba(255, 244, 244, 0.72), rgba(255, 244, 244, 0.88)), url(${currentBackgroundImage})`,
+            }
+          : undefined
+      }
+    >
       <section className="phone-shell">
         {settings.allow_theme_switch && (
           <div className="theme-switcher">
@@ -201,17 +256,19 @@ export default function Home() {
             >
               跟隨系統
             </button>
+
             <button
               className={themeMode === "light" ? "active" : ""}
               onClick={() => changeTheme("light")}
             >
-              紅白
+              淺色主題
             </button>
+
             <button
               className={themeMode === "dark" ? "active" : ""}
               onClick={() => changeTheme("dark")}
             >
-              黑金
+              深色主題
             </button>
           </div>
         )}
@@ -219,18 +276,18 @@ export default function Home() {
         <div
           className="cover"
           style={
-            settings.cover_image_url
-              ? { backgroundImage: `url(${settings.cover_image_url})` }
+            currentCoverImage
+              ? { backgroundImage: `url(${currentCoverImage})` }
               : undefined
           }
         >
-          {!settings.cover_image_url && <div className="cover-text">CANG JING GE</div>}
+          {!currentCoverImage && <div className="cover-text">CANG JING GE</div>}
         </div>
 
         <div className="profile-card">
           <div className="avatar">
-            {settings.avatar_image_url ? (
-              <img src={settings.avatar_image_url} alt="頭像" />
+            {currentAvatarImage ? (
+              <img src={currentAvatarImage} alt="頭像" />
             ) : (
               "藏"
             )}
@@ -258,7 +315,11 @@ export default function Home() {
             )}
 
             {settings.telegram_is_visible && (
-              <a href={settings.telegram_url} className="contact-btn" target="_blank">
+              <a
+                href={settings.telegram_url}
+                className="contact-btn"
+                target="_blank"
+              >
                 {settings.telegram_label}
               </a>
             )}
@@ -277,7 +338,11 @@ export default function Home() {
               onClick={() => trackButtonClick(button)}
             >
               <span className="icon">
-                {button.image_url ? <img src={button.image_url} alt="" /> : button.icon_text}
+                {button.image_url ? (
+                  <img src={button.image_url} alt="" />
+                ) : (
+                  button.icon_text
+                )}
               </span>
               <span>{button.title}</span>
             </a>
@@ -294,7 +359,11 @@ export default function Home() {
               onClick={() => trackButtonClick(button)}
             >
               <span className="grid-icon">
-                {button.image_url ? <img src={button.image_url} alt="" /> : button.icon_text}
+                {button.image_url ? (
+                  <img src={button.image_url} alt="" />
+                ) : (
+                  button.icon_text
+                )}
               </span>
               <span>{button.title}</span>
             </a>

@@ -9,17 +9,6 @@ type ThemeMode = "system" | "light" | "dark";
 type ActiveTab = "front" | "buttons" | "stats" | "reports";
 type ButtonType = "large" | "grid";
 
-type SiteImageField =
-  | "background_image_url"
-  | "cover_image_url"
-  | "avatar_image_url"
-  | "light_background_image_url"
-  | "light_cover_image_url"
-  | "light_avatar_image_url"
-  | "dark_background_image_url"
-  | "dark_cover_image_url"
-  | "dark_avatar_image_url";
-
 type SiteSettings = {
   id: string;
   site_name: string;
@@ -28,12 +17,6 @@ type SiteSettings = {
   cover_image_url: string | null;
   avatar_image_url: string | null;
   background_image_url: string | null;
-  light_background_image_url: string | null;
-  light_cover_image_url: string | null;
-  light_avatar_image_url: string | null;
-  dark_background_image_url: string | null;
-  dark_cover_image_url: string | null;
-  dark_avatar_image_url: string | null;
   line_label: string;
   line_url: string;
   line_is_visible: boolean;
@@ -156,7 +139,7 @@ export default function AdminPage() {
 
     async function uploadImage(
       event: ChangeEvent<HTMLInputElement>,
-      field: SiteImageField
+      field: "background_image_url" | "cover_image_url" | "avatar_image_url"
     ) {
     if (!settings) return;
 
@@ -167,7 +150,12 @@ export default function AdminPage() {
     setMessage("圖片上傳中...");
 
     const ext = file.name.split(".").pop();
-    const folder = field.replace("_image_url", "").split("_").join("-");
+    const folder =
+      field === "background_image_url"
+        ? "backgrounds"
+        : field === "cover_image_url"
+        ? "covers"
+        : "avatars";
     const fileName = `${folder}/${Date.now()}-${Math.random()
       .toString(36)
       .slice(2)}.${ext}`;
@@ -279,13 +267,6 @@ async function uploadButtonImage(
         background_image_url: settings.background_image_url,
         cover_image_url: settings.cover_image_url,
         avatar_image_url: settings.avatar_image_url,
-        light_background_image_url: settings.light_background_image_url,
-        light_cover_image_url: settings.light_cover_image_url,
-        light_avatar_image_url: settings.light_avatar_image_url,
-
-        dark_background_image_url: settings.dark_background_image_url,
-        dark_cover_image_url: settings.dark_cover_image_url,
-        dark_avatar_image_url: settings.dark_avatar_image_url,
         line_label: settings.line_label,
         line_url: settings.line_url,
         line_is_visible: settings.line_is_visible,
@@ -557,8 +538,9 @@ function FrontSettingsPanel({
   setTagsText: (value: string) => void;
   uploadImage: (
     event: ChangeEvent<HTMLInputElement>,
-    field: SiteImageField
-  ) => void;  uploading: boolean;
+    field: "background_image_url" | "cover_image_url" | "avatar_image_url"
+  ) => void;
+  uploading: boolean;
   saveSettings: () => void;
   message: string;
 }) {
@@ -566,139 +548,70 @@ function FrontSettingsPanel({
     <section className="admin-card admin-card-full">
       <h2>首頁基本資料</h2>
 
-<h3 className="theme-image-title">淺色主題｜紅白調圖片</h3>
+      <div className="image-upload-grid">
+      <div className="image-upload-box">
+        <h3>背景圖</h3>
 
-<div className="image-upload-grid">
-  <div className="image-upload-box">
-    <h3>淺色背景圖</h3>
+        {settings.background_image_url ? (
+          <img
+            className="cover-preview"
+            src={settings.background_image_url}
+            alt="背景圖預覽"
+          />
+        ) : (
+          <div className="empty-preview">尚未上傳背景圖</div>
+        )}
 
-    {settings.light_background_image_url ? (
-      <img
-        className="cover-preview"
-        src={settings.light_background_image_url}
-        alt="淺色背景圖預覽"
-      />
-    ) : (
-      <div className="empty-preview">尚未上傳淺色背景圖</div>
-    )}
+        <input
+          type="file"
+          accept="image/*"
+          onChange={(event) => uploadImage(event, "background_image_url")}
+          disabled={uploading}
+        />
+      </div>
 
-    <input
-      type="file"
-      accept="image/*"
-      onChange={(event) => uploadImage(event, "light_background_image_url")}
-      disabled={uploading}
-    />
-  </div>
+        <div className="image-upload-box">
+          <h3>封面圖</h3>
 
-  <div className="image-upload-box">
-    <h3>淺色封面圖</h3>
+          {settings.cover_image_url ? (
+            <img
+              className="cover-preview"
+              src={settings.cover_image_url}
+              alt="封面圖預覽"
+            />
+          ) : (
+            <div className="empty-preview">尚未上傳封面圖</div>
+          )}
 
-    {settings.light_cover_image_url ? (
-      <img
-        className="cover-preview"
-        src={settings.light_cover_image_url}
-        alt="淺色封面圖預覽"
-      />
-    ) : (
-      <div className="empty-preview">尚未上傳淺色封面圖</div>
-    )}
+          <input
+            type="file"
+            accept="image/*"
+            onChange={(event) => uploadImage(event, "cover_image_url")}
+            disabled={uploading}
+          />
+        </div>
 
-    <input
-      type="file"
-      accept="image/*"
-      onChange={(event) => uploadImage(event, "light_cover_image_url")}
-      disabled={uploading}
-    />
-  </div>
+        <div className="image-upload-box">
+          <h3>頭像</h3>
 
-  <div className="image-upload-box">
-    <h3>淺色頭像</h3>
+          {settings.avatar_image_url ? (
+            <img
+              className="avatar-preview"
+              src={settings.avatar_image_url}
+              alt="頭像預覽"
+            />
+          ) : (
+            <div className="empty-preview avatar-empty">藏</div>
+          )}
 
-    {settings.light_avatar_image_url ? (
-      <img
-        className="avatar-preview"
-        src={settings.light_avatar_image_url}
-        alt="淺色頭像預覽"
-      />
-    ) : (
-      <div className="empty-preview avatar-empty">淺</div>
-    )}
-
-    <input
-      type="file"
-      accept="image/*"
-      onChange={(event) => uploadImage(event, "light_avatar_image_url")}
-      disabled={uploading}
-    />
-  </div>
-</div>
-
-<h3 className="theme-image-title">深色主題｜黑金調圖片</h3>
-
-<div className="image-upload-grid">
-  <div className="image-upload-box">
-    <h3>深色背景圖</h3>
-
-    {settings.dark_background_image_url ? (
-      <img
-        className="cover-preview"
-        src={settings.dark_background_image_url}
-        alt="深色背景圖預覽"
-      />
-    ) : (
-      <div className="empty-preview">尚未上傳深色背景圖</div>
-    )}
-
-    <input
-      type="file"
-      accept="image/*"
-      onChange={(event) => uploadImage(event, "dark_background_image_url")}
-      disabled={uploading}
-    />
-  </div>
-
-  <div className="image-upload-box">
-    <h3>深色封面圖</h3>
-
-    {settings.dark_cover_image_url ? (
-      <img
-        className="cover-preview"
-        src={settings.dark_cover_image_url}
-        alt="深色封面圖預覽"
-      />
-    ) : (
-      <div className="empty-preview">尚未上傳深色封面圖</div>
-    )}
-
-    <input
-      type="file"
-      accept="image/*"
-      onChange={(event) => uploadImage(event, "dark_cover_image_url")}
-      disabled={uploading}
-    />
-  </div>
-
-  <div className="image-upload-box">
-    <h3>深色頭像</h3>
-
-    {settings.dark_avatar_image_url ? (
-      <img
-        className="avatar-preview"
-        src={settings.dark_avatar_image_url}
-        alt="深色頭像預覽"
-      />
-    ) : (
-      <div className="empty-preview avatar-empty">深</div>
-    )}
-
-    <input
-      type="file"
-      accept="image/*"
-      onChange={(event) => uploadImage(event, "dark_avatar_image_url")}
-      disabled={uploading}
-    />
-  </div>
-</div>
+          <input
+            type="file"
+            accept="image/*"
+            onChange={(event) => uploadImage(event, "avatar_image_url")}
+            disabled={uploading}
+          />
+        </div>
+      </div>
 
       <label>
         店名
@@ -820,8 +733,8 @@ function FrontSettingsPanel({
           }
         >
           <option value="system">跟隨系統</option>
-          <option value="light">淺色主題｜紅白調</option>
-          <option value="dark">深色主題｜黑金調</option>
+          <option value="light">亮面模式｜紅白調</option>
+          <option value="dark">暗面模式｜黑金調</option>
         </select>
       </label>
 
