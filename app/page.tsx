@@ -50,7 +50,6 @@ const fallbackSettings: SiteSettings = {
   telegram_is_visible: true,
   default_theme: "system",
   allow_theme_switch: true,
-  background_image_url: null,
 };
 
 function getVisitorId() {
