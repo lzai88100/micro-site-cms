@@ -821,7 +821,7 @@ function FrontSettingsPanel({
         >
           <option value="system">跟隨系統</option>
           <option value="light">淺色主題｜紅白調</option>
-          <option value="dark">深色主題｜黑金調</option>
+          <option value="dark">深色主題｜黑紅調</option>
         </select>
       </label>
 
