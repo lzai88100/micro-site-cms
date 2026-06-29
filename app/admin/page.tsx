@@ -16,6 +16,7 @@ type SiteSettings = {
   intro_content: string;
   cover_image_url: string | null;
   avatar_image_url: string | null;
+  background_image_url: string | null;
   line_label: string;
   line_url: string;
   line_is_visible: boolean;
@@ -136,10 +137,10 @@ export default function AdminPage() {
     setButtons(data || []);
   }
 
-  async function uploadImage(
-    event: ChangeEvent<HTMLInputElement>,
-    field: "cover_image_url" | "avatar_image_url"
-  ) {
+    async function uploadImage(
+      event: ChangeEvent<HTMLInputElement>,
+      field: "background_image_url" | "cover_image_url" | "avatar_image_url"
+    ) {
     if (!settings) return;
 
     const file = event.target.files?.[0];
@@ -149,7 +150,12 @@ export default function AdminPage() {
     setMessage("圖片上傳中...");
 
     const ext = file.name.split(".").pop();
-    const folder = field === "cover_image_url" ? "covers" : "avatars";
+    const folder =
+      field === "background_image_url"
+        ? "backgrounds"
+        : field === "cover_image_url"
+        ? "covers"
+        : "avatars";
     const fileName = `${folder}/${Date.now()}-${Math.random()
       .toString(36)
       .slice(2)}.${ext}`;
@@ -258,6 +264,7 @@ async function uploadButtonImage(
         site_name: settings.site_name,
         tags,
         intro_content: settings.intro_content,
+        background_image_url: settings.background_image_url,
         cover_image_url: settings.cover_image_url,
         avatar_image_url: settings.avatar_image_url,
         line_label: settings.line_label,
@@ -531,7 +538,7 @@ function FrontSettingsPanel({
   setTagsText: (value: string) => void;
   uploadImage: (
     event: ChangeEvent<HTMLInputElement>,
-    field: "cover_image_url" | "avatar_image_url"
+    field: "background_image_url" | "cover_image_url" | "avatar_image_url"
   ) => void;
   uploading: boolean;
   saveSettings: () => void;
@@ -542,6 +549,27 @@ function FrontSettingsPanel({
       <h2>首頁基本資料</h2>
 
       <div className="image-upload-grid">
+      <div className="image-upload-box">
+        <h3>背景圖</h3>
+
+        {settings.background_image_url ? (
+          <img
+            className="cover-preview"
+            src={settings.background_image_url}
+            alt="背景圖預覽"
+          />
+        ) : (
+          <div className="empty-preview">尚未上傳背景圖</div>
+        )}
+
+        <input
+          type="file"
+          accept="image/*"
+          onChange={(event) => uploadImage(event, "background_image_url")}
+          disabled={uploading}
+        />
+      </div>
+
         <div className="image-upload-box">
           <h3>封面圖</h3>
 

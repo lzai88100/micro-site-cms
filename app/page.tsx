@@ -10,6 +10,7 @@ type SiteSettings = {
   site_name: string;
   tags: string[];
   intro_content: string;
+  background_image_url: string | null;
   cover_image_url: string | null;
   avatar_image_url: string | null;
   line_label: string;
@@ -38,6 +39,7 @@ const fallbackSettings: SiteSettings = {
   tags: ["全台", "嚴選", "情報中心"],
   intro_content:
     "📌 客服時間：11:00 - 04:30\n📌 營業時間：12:00 - 04:30\n🌏 服務地區：台北 / 新北 / 桃園 / 新竹 / 台中 / 台南 / 高雄\n📮 預約方式：請先看完問與答，再告訴我們想要約的時間、哪些地區、什麼方案。",
+  background_image_url: null,
   cover_image_url: null,
   avatar_image_url: null,
   line_label: "LINE 一鍵聯絡",
@@ -48,6 +50,7 @@ const fallbackSettings: SiteSettings = {
   telegram_is_visible: true,
   default_theme: "system",
   allow_theme_switch: true,
+  background_image_url: null,
 };
 
 function getVisitorId() {
@@ -176,7 +179,20 @@ export default function Home() {
   const gridButtons = buttons.filter((button) => button.button_type === "grid");
 
   return (
-    <main className="site" data-theme={resolvedTheme}>
+  <main
+    className={settings.background_image_url ? "site has-background" : "site"}
+    data-theme={resolvedTheme}
+    style={
+      settings.background_image_url
+        ? {
+            backgroundImage:
+              resolvedTheme === "dark"
+                ? `linear-gradient(rgba(0, 0, 0, 0.62), rgba(0, 0, 0, 0.78)), url(${settings.background_image_url})`
+                : `linear-gradient(rgba(255, 244, 244, 0.72), rgba(255, 244, 244, 0.88)), url(${settings.background_image_url})`,
+          }
+        : undefined
+    }
+  >
       <section className="phone-shell">
         {settings.allow_theme_switch && (
           <div className="theme-switcher">
