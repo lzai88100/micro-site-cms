@@ -3,7 +3,12 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "藏精閣｜資訊中心",
-  description: "藏精閣｜微官網",
+  description: "藏精閣官方資訊中心",
+  icons: {
+    icon: "/favicon.png?v=2",
+    shortcut: "/favicon.png?v=2",
+    apple: "/favicon.png?v=2",
+  },
 };
 
 export default function RootLayout({
